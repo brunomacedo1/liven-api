@@ -1,0 +1,12 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Liven-api",
+    "description": "Api criada para o teste técnico da empresa liven",
+    "version": "1.0.0",
+    "contact": {
+      "email": "macedobrun31@gmail.com"
+    }
+  },
+  "paths": {}
+}
