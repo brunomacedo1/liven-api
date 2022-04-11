@@ -1,3 +1,0 @@
-class DeleteUserController {}
-
-export { DeleteUserController };

@@ -23,6 +23,9 @@ class UpdateUserUseCase {
       throw new AppError("User does not exist");
     }
 
+    /** As condicionais são utilizadas pois não é obrigatório que todos os campos sejam passados.
+     * Caso o valor da variável seja nulo, ele utilizará o que está salvo em banco.
+     */
     await this.usersRepository.update({
       id,
       name: name || userExists.name,

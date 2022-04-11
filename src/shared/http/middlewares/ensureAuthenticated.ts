@@ -14,20 +14,21 @@ export async function ensureAuthenticated(
   next: NextFunction
 ) {
   const authHeader = request.headers.authorization;
-  // eslint-disable-next-line prefer-destructuring
-  // const path = request.path;
 
-  // if (
-  //   path === "/sessions" ||
-  //   (path === "/users" && request.method === "POST")
-  // ) {
-  //   next();
-  // }
+  /** Rota  de criação e autenticação de usuários não precisam estar autenticadas */
+  if (
+    (request.path === "/users" && request.method === "POST") ||
+    request.path === "/sessions"
+  ) {
+    return next();
+  }
 
   if (!authHeader) {
     throw new AppError("Token is missing.", 401);
   }
+
   const [, token] = authHeader.split(" ");
+
   try {
     const { sub: userId } = verify(
       token,

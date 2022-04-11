@@ -42,7 +42,7 @@ class UsersRepository implements IUsersRepository {
 
   /** Busca um usuário a partir do seu id no banco de dados. */
   async getUser(id: string): Promise<User> {
-    const user = this.repository.findOne({
+    const user = await this.repository.findOne({
       where: { id },
       relations: {
         addresses: true,
