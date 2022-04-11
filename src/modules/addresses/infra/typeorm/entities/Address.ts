@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from "typeorm";
 import { v4 as uuidV4 } from "uuid";
 
 import { User } from "@modules/users/infra/typeorm/entities/User";
@@ -20,10 +27,11 @@ class Address {
   @Column()
   country: string;
 
-  @ManyToOne(() => User, (user) => user.address)
+  @ManyToOne(() => User, (user) => user.id) // Faz com que o campo user_id referencie(foreing key) o id do usuário, da tabela users.
+  @JoinColumn({ name: "user_id" })
   user_id: User;
 
-  @Column()
+  @CreateDateColumn()
   created_at: Date;
 
   constructor() {

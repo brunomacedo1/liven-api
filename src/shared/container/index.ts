@@ -8,7 +8,7 @@ container.registerSingleton<IUsersRepository>(
   UsersRepository
 );
 
-container.registerSingleton<IAdressesRepository>(
-  "AdressesRepository",
-  AdressesRepository
-);
+// container.registerSingleton<IAdressesRepository>(
+//   "AdressesRepository",
+//   AdressesRepository
+// );

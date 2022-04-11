@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
 import { IUpdateUsersDTO } from "@modules/users/dtos/IUpdateUsersDTO";
 import { IUsersRepository } from "@modules/users/repositories/IUsersRepository";
-import { dataSource } from "@shared/database";
+import { dataSource } from "@shared/typeorm/database";
 
 import { User } from "../entities/User";
 
@@ -22,8 +22,20 @@ class UsersRepository implements IUsersRepository {
   /** @data objeto contendo as informações do usuário, seu tipo vem da interface ICreateUsersDTO
     Método para criar um usuário. 
    */
-  async create(data: ICreateUsersDTO): Promise<void> {
-    const user = this.repository.create(data);
+  async create({
+    name,
+    cpf,
+    email,
+    password,
+    birth_date,
+  }: ICreateUsersDTO): Promise<void> {
+    const user = this.repository.create({
+      name,
+      cpf,
+      email,
+      password,
+      birth_date,
+    });
 
     await this.repository.save(user);
   }
@@ -33,7 +45,7 @@ class UsersRepository implements IUsersRepository {
     const user = this.repository.findOne({
       where: { id },
       relations: {
-        address: true,
+        addresses: true,
       },
     });
 
@@ -41,11 +53,8 @@ class UsersRepository implements IUsersRepository {
   }
 
   /** Faz a atualização parcial de dados do usuário */
-  async update(id: string, data: IUpdateUsersDTO): Promise<void> {
-    await this.repository.update(
-      { id },
-      { name: data.name, password: data.password }
-    );
+  async update(data: IUpdateUsersDTO): Promise<void> {
+    await this.repository.update({ id: data.id }, data);
   }
 
   /** Remove um usuário */

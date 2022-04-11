@@ -7,7 +7,7 @@ import {
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 
-import { Address } from "@modules/addresses/infra/entities/Address";
+import { Address } from "@modules/addresses/infra/typeorm/entities/Address";
 
 @Entity("users")
 class User {
@@ -26,14 +26,16 @@ class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Address, (address) => address.user_id)
-  address: Address[];
-
-  @Column()
+  @Column({
+    type: "date",
+  })
   birth_date: Date;
 
   @CreateDateColumn()
   created_at: Date;
+
+  @OneToMany(() => Address, (address) => address.user_id) // Cria a relação inversa da foreingkey(user_id) na  tabela de endereços, para que seja possível retornar os endereços do usuário
+  addresses: Address[];
 
   constructor() {
     if (!this.id) {
