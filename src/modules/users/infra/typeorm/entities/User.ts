@@ -34,7 +34,10 @@ class User {
   @CreateDateColumn()
   created_at: Date;
 
-  @OneToMany(() => Address, (address) => address.user_id) // Cria a relação inversa da foreingkey(user_id) na  tabela de endereços, para que seja possível retornar os endereços do usuário
+  @OneToMany(() => Address, (address) => address.user, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  }) // Cria a relação inversa da foreingkey(user_id) na  tabela de endereços, para que seja possível retornar os endereços do usuário
   addresses: Address[];
 
   constructor() {

@@ -13,13 +13,13 @@ import { User } from "@modules/users/infra/typeorm/entities/User";
 @Entity("addresses")
 class Address {
   @PrimaryColumn()
-  id: string;
+  id?: string;
 
   @Column()
   address: string;
 
   @Column()
-  zipcode: number;
+  zipcode: string;
 
   @Column()
   state: string;
@@ -27,9 +27,12 @@ class Address {
   @Column()
   country: string;
 
+  @Column()
+  user_id: string;
+
   @ManyToOne(() => User, (user) => user.id) // Faz com que o campo user_id referencie(foreing key) o id do usuário, da tabela users.
   @JoinColumn({ name: "user_id" })
-  user_id: User;
+  user: User;
 
   @CreateDateColumn()
   created_at: Date;

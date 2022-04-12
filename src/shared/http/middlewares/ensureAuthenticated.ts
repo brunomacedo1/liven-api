@@ -8,6 +8,9 @@ interface IPayload {
   sub: string;
 }
 
+/** Middleware de autenticação de usuário
+ * Utiliza a biblioteca jsonwebtoken
+ */
 export async function ensureAuthenticated(
   request: Request,
   response: Response,
@@ -20,6 +23,7 @@ export async function ensureAuthenticated(
     (request.path === "/users" && request.method === "POST") ||
     request.path === "/sessions"
   ) {
+    console.log("aqui");
     return next();
   }
 

@@ -20,7 +20,7 @@ class UsersRepository implements IUsersRepository {
   }
 
   /** @data objeto contendo as informações do usuário, seu tipo vem da interface ICreateUsersDTO
-    Método para criar um usuário. 
+    Método para criar e salvar um usuário no banco de dados. 
    */
   async create({
     name,
@@ -37,6 +37,7 @@ class UsersRepository implements IUsersRepository {
       birth_date,
     });
 
+    // Salva a instância criada no banco de dados
     await this.repository.save(user);
   }
 
@@ -53,8 +54,14 @@ class UsersRepository implements IUsersRepository {
   }
 
   /** Faz a atualização parcial de dados do usuário */
-  async update(data: IUpdateUsersDTO): Promise<void> {
-    await this.repository.update({ id: data.id }, data);
+  async update({
+    id,
+    name,
+    email,
+    password,
+    birth_date,
+  }: IUpdateUsersDTO): Promise<void> {
+    await this.repository.update({ id }, { name, email, password, birth_date });
   }
 
   /** Remove um usuário */
