@@ -3,5 +3,5 @@ export interface ICreateAddressDTO {
   zipcode: string;
   state: string;
   country: string;
-  user_id: any;
+  user_id: string;
 }

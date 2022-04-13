@@ -1,6 +1,8 @@
 import { Repository } from "typeorm";
+import { Query } from "typeorm/driver/Query";
 
 import { ICreateAddressDTO } from "@modules/addresses/dtos/ICreateAddressDTO";
+import { IGetAddressesDTO } from "@modules/addresses/dtos/IGetAddressesDTO";
 import { IUpdateAddressDTO } from "@modules/addresses/dtos/IUpdateAddressDTO";
 import { IAddressesRepository } from "@modules/addresses/repositories/IAddressesRepository";
 import { dataSource } from "@shared/typeorm/database";
@@ -32,9 +34,15 @@ class AddressesRepository implements IAddressesRepository {
     await this.repository.save(addressInstance);
   }
 
-  async getAddresses(id: string): Promise<Address[]> {
-    const addresses = await this.repository.findBy({
-      user: { id },
+  async getAddresses({
+    user_id,
+    country,
+  }: IGetAddressesDTO): Promise<Address[]> {
+    const addresses = await this.repository.find({
+      where: {
+        user_id,
+        country,
+      },
     });
 
     return addresses;
