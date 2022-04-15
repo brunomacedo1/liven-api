@@ -14,6 +14,9 @@ class GetUserUseCase {
   async execute(id: string): Promise<User> {
     const user = await this.usersRepository.getUser(id);
 
+    // Remove a senha do usuário do objeto que será enviado para requisição
+    delete user.password;
+
     if (!user) {
       throw new AppError("User does not exists");
     }

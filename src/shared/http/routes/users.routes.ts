@@ -17,6 +17,7 @@ const deleteUserController = new DeleteUserController();
 
 // Endpoints referentes ao modulo de usuário(CRUD)
 usersRoutes.use(ensureAuthenticated);
+
 usersRoutes.get("/users", getUserController.handle);
 usersRoutes.post("/users", createUserController.handle);
 usersRoutes.patch("/users", updateUserController.handle);

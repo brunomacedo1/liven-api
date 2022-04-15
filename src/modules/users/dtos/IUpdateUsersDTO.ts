@@ -5,6 +5,5 @@ export interface IUpdateUsersDTO {
   id: string;
   name?: string;
   email?: string;
-  password?: string;
   birth_date?: Date;
 }

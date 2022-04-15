@@ -23,12 +23,11 @@ export async function ensureAuthenticated(
     (request.path === "/users" && request.method === "POST") ||
     request.path === "/sessions"
   ) {
-    console.log("aqui");
     return next();
   }
 
   if (!authHeader) {
-    throw new AppError("Token is missing.", 401);
+    throw new AppError("Token is invalid or missing.", 401);
   }
 
   const [, token] = authHeader.split(" ");
@@ -53,6 +52,6 @@ export async function ensureAuthenticated(
 
     return next();
   } catch {
-    throw new AppError("Token is invalid.", 401);
+    throw new AppError("Token is invalid or missing.", 401);
   }
 }

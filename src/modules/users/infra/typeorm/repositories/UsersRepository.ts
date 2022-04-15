@@ -58,10 +58,9 @@ class UsersRepository implements IUsersRepository {
     id,
     name,
     email,
-    password,
     birth_date,
   }: IUpdateUsersDTO): Promise<void> {
-    await this.repository.update({ id }, { name, email, password, birth_date });
+    await this.repository.update({ id }, { name, email, birth_date });
   }
 
   /** Remove um usuário */

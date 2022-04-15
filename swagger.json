@@ -1,5 +1,19 @@
 {
   "openapi": "3.0.0",
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "info": {
     "title": "Liven-api",
     "description": "Api criada para o teste técnico da empresa liven",
@@ -8,5 +22,460 @@
       "email": "macedobrun31@gmail.com"
     }
   },
-  "paths": {}
+  "paths": {
+    "/sessions": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "summary": "Autenticação do usuário",
+        "description": "Utiliza o email e senha para fazer autenticação do usuário. Retorna um token jwt e alguns dados do usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "email@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Incorrect email or password."
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string"
+                      },
+                      "user": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Buscar um usuário.",
+        "description": "Retorna os dados do usuário e seus respectivos endereços. Utiliza o id do usuário que está criptografado no token JWT.",
+        "responses": {
+          "401": {
+            "description": "Unauthorized, token is missing or invalid"
+          },
+          "400": {
+            "description": "User does not exists"
+          },
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "cpf": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "birth_date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "datetime"
+                      },
+                      "addresses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Atualizar dados de usuário.",
+        "description": "O usuário autenticado consegue fazer a alteração dos dados de nome,email e data de nascimento. Os dados são enviados no body da requisição, e o id de usuário é recebido através do token JWT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John doe"
+                  },
+                  "cpf": {
+                    "type": "string",
+                    "example": "11111111111"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "email@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "birth_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "02/02/2022"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "User already exists"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Criação de um usuário.",
+        "description": "Cria e salva no banco de dados um usuário que utilizará a aplicação",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "email@email.com"
+                  },
+                  "birth_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "02/02/2022"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          },
+          "400": {
+            "description": "User does not exists"
+          },
+          "401": {
+            "description": "Unauthorized, token is invalid or missing"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Deletar um usuário.",
+        "description": "Deleta o usuário do banco de dados da aplicação",
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          },
+          "400": {
+            "description": "User does not exists"
+          },
+          "401": {
+            "description": "Unauthorized, token is invalid or missing"
+          }
+        }
+      }
+    },
+    "/users/address": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Retorna lista de endereços.",
+        "description": "Retorna os dados dos endereços de um usuário. Utiliza o id do usuário que está criptografado no token JWT. Também é possível passar um valor para country como query string.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "country",
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "description": "Abreviação do nome de um país. ex:'BR'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "user_id": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "string"
+                      },
+                      "zipcode": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, token is missing or invalid"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Atualizar dados de usuário.",
+        "description": "O usuário autenticado consegue fazer a alteração dos dados de nome,email e data de nascimento. Os dados são enviados no body da requisição, e o id de usuário é recebido através do token JWT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John doe"
+                  },
+                  "cpf": {
+                    "type": "string",
+                    "example": "11111111111"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "email@email.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  },
+                  "birth_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "02/02/2022"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Address already exists"
+          },
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Criação de um usuário.",
+        "description": "Cria e salva no banco de dados um usuário que utilizará a aplicação",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "email@email.com"
+                  },
+                  "birth_date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "02/02/2022"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated"
+          },
+          "400": {
+            "description": "Address does not exists"
+          },
+          "401": {
+            "description": "Unauthorized, token is invalid or missing"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Deletar um usuário.",
+        "description": "Deleta o usuário do banco de dados da aplicação",
+        "responses": {
+          "200": {
+            "description": "Deleted"
+          },
+          "400": {
+            "description": "User does not exists"
+          },
+          "401": {
+            "description": "Unauthorized, token is invalid or missing"
+          }
+        }
+      }
+    },
+    "/users/address/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Retornar endereço especifico.",
+        "description": "Retorna os dados de um endereço especifico.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Id do endereço que se deseja buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "user_id": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "string"
+                      },
+                      "zipcode": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "datetime"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, token is missing or invalid."
+          },
+          "400": {
+            "description": "Address not found."
+          }
+        }
+      }
+    }
+  }
 }
