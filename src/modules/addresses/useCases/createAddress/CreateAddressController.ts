@@ -8,9 +8,9 @@ class CreateAddressController {
     const { id } = request.user;
     const { address, country, state, zipcode } = request.body;
 
-    const createAddresUseCase = container.resolve(CreateAddressUseCase);
+    const createAddressUseCase = container.resolve(CreateAddressUseCase);
 
-    await createAddresUseCase.execute({
+    await createAddressUseCase.execute({
       address,
       country,
       state,

@@ -3,6 +3,7 @@ import { AddressesRepositoryInMemory } from "@modules/addresses/repositories/in-
 import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
 import { UsersRepositoryInMemory } from "@modules/users/repositories/in-memory/UsersRepositoryInMemory";
 import { CreateUserUseCase } from "@modules/users/useCases/createUser/CreateUserUseCase";
+import { AppError } from "@shared/errors/AppError";
 
 import { CreateAddressUseCase } from "../createAddress/CreateAddressUseCase";
 import { DeleteAddressUseCase } from "./DeleteAddressUseCase";
@@ -10,14 +11,16 @@ import { DeleteAddressUseCase } from "./DeleteAddressUseCase";
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let createUserUseCase: CreateUserUseCase;
 let addressesRepositoryInMemory: AddressesRepositoryInMemory;
-let createAddresUseCase: CreateAddressUseCase;
+let createAddressUseCase: CreateAddressUseCase;
 let deleteAddressUseCase: DeleteAddressUseCase;
 describe("Delete addresses", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
     addressesRepositoryInMemory = new AddressesRepositoryInMemory();
-    createAddresUseCase = new CreateAddressUseCase(addressesRepositoryInMemory);
+    createAddressUseCase = new CreateAddressUseCase(
+      addressesRepositoryInMemory
+    );
     deleteAddressUseCase = new DeleteAddressUseCase(
       addressesRepositoryInMemory
     );
@@ -43,7 +46,7 @@ describe("Delete addresses", () => {
       zipcode: "123456",
     };
 
-    await createAddresUseCase.execute(addressData);
+    await createAddressUseCase.execute(addressData);
     const address = await addressesRepositoryInMemory.getAddresses({
       user_id: user.id,
     });
@@ -51,5 +54,13 @@ describe("Delete addresses", () => {
     await deleteAddressUseCase.execute(address[0].id);
 
     expect(addressesRepositoryInMemory.addresses.length).toBeLessThan(1);
+  });
+
+  it("should not delete an address that does not exists", () => {
+    expect(async () => {
+      await deleteAddressUseCase.execute(
+        "ef58b17f-32ec-4949-8c8c-6606b567ca2e"
+      );
+    }).rejects.toBeInstanceOf(AppError);
   });
 });

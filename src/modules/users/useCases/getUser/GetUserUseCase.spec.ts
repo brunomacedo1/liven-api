@@ -1,5 +1,4 @@
 import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
-import { User } from "@modules/users/infra/typeorm/entities/User";
 import { UsersRepositoryInMemory } from "@modules/users/repositories/in-memory/UsersRepositoryInMemory";
 
 import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
@@ -27,7 +26,7 @@ describe("Get user by id", () => {
 
     await createUserUseCase.execute(data);
     const user = await usersRepositoryInMemory.findUserByEmail(data.email);
-    const returnedUser = await usersRepositoryInMemory.getUser(user.id);
+    const returnedUser = await getUserUseCase.execute(user.id);
     expect(returnedUser).toHaveProperty("id");
   });
 });

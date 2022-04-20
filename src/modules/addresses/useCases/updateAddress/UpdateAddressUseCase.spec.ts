@@ -1,19 +1,21 @@
 import { ICreateAddressDTO } from "@modules/addresses/dtos/ICreateAddressDTO";
-import { Address } from "@modules/addresses/infra/typeorm/entities/Address";
+import { IUpdateAddressDTO } from "@modules/addresses/dtos/IUpdateAddressDTO";
 import { AddressesRepositoryInMemory } from "@modules/addresses/repositories/in-memory/AddressesRepositoryInMemory";
 import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
 import { UsersRepositoryInMemory } from "@modules/users/repositories/in-memory/UsersRepositoryInMemory";
 import { CreateUserUseCase } from "@modules/users/useCases/createUser/CreateUserUseCase";
+import { AppError } from "@shared/errors/AppError";
 
 import { CreateAddressUseCase } from "../createAddress/CreateAddressUseCase";
-import { GetAddressesUseCase } from "./GetAddressesUseCase";
+import { UpdateAddressUseCase } from "./UpdateAddressUseCase";
 
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let createUserUseCase: CreateUserUseCase;
 let addressesRepositoryInMemory: AddressesRepositoryInMemory;
 let createAddressUseCase: CreateAddressUseCase;
-let getAddressesUseCase: GetAddressesUseCase;
-describe("Get user addresses", () => {
+let updateAddressUseCase: UpdateAddressUseCase;
+
+describe("Update address", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
@@ -21,10 +23,12 @@ describe("Get user addresses", () => {
     createAddressUseCase = new CreateAddressUseCase(
       addressesRepositoryInMemory
     );
-    getAddressesUseCase = new GetAddressesUseCase(addressesRepositoryInMemory);
+    updateAddressUseCase = new UpdateAddressUseCase(
+      addressesRepositoryInMemory
+    );
   });
 
-  it("should return an specific address", async () => {
+  it("should update an address", async () => {
     const userData: ICreateUsersDTO = {
       cpf: "11111111111",
       email: "user@example.com",
@@ -45,14 +49,42 @@ describe("Get user addresses", () => {
     };
 
     await createAddressUseCase.execute(addressData);
-    const addresses = await getAddressesUseCase.execute({ user_id: user.id });
+    const address = await addressesRepositoryInMemory.getAddresses({
+      user_id: user.id,
+    });
 
-    expect(addresses).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          user_id: user.id,
-        }),
-      ])
+    const updateAddressData: IUpdateAddressDTO = {
+      id: address[0].id,
+      address: "address update example",
+      country: "BR",
+      state: "Alagoas",
+      zipcode: "123456",
+    };
+
+    await updateAddressUseCase.execute(updateAddressData);
+
+    const updatedAddress = await addressesRepositoryInMemory.getAddressById(
+      address[0].id
     );
+
+    expect(updatedAddress).toEqual(
+      expect.objectContaining({
+        address: updateAddressData.address,
+      })
+    );
+  });
+
+  it("should not update an address, if address does not exists on 'db' ", () => {
+    expect(async () => {
+      const updateAddressData: IUpdateAddressDTO = {
+        id: "ef58b17f-32ec-4949-8c8c-6606b567ca2e",
+        address: "address update example",
+        country: "BR",
+        state: "Alagoas",
+        zipcode: "123456",
+      };
+
+      await updateAddressUseCase.execute(updateAddressData);
+    }).rejects.toBeInstanceOf(AppError);
   });
 });

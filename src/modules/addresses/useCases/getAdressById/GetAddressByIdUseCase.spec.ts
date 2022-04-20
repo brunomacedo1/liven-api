@@ -10,14 +10,16 @@ import { GetAddressByIdUseCase } from "./GetAddressByIdUseCase";
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let createUserUseCase: CreateUserUseCase;
 let addressesRepositoryInMemory: AddressesRepositoryInMemory;
-let createAddresUseCase: CreateAddressUseCase;
+let createAddressUseCase: CreateAddressUseCase;
 let getAddressByIdUseCase: GetAddressByIdUseCase;
-describe("Delete address", () => {
+describe("Get address by its id", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
     addressesRepositoryInMemory = new AddressesRepositoryInMemory();
-    createAddresUseCase = new CreateAddressUseCase(addressesRepositoryInMemory);
+    createAddressUseCase = new CreateAddressUseCase(
+      addressesRepositoryInMemory
+    );
     getAddressByIdUseCase = new GetAddressByIdUseCase(
       addressesRepositoryInMemory
     );
@@ -43,7 +45,7 @@ describe("Delete address", () => {
       zipcode: "123456",
     };
 
-    await createAddresUseCase.execute(addressData);
+    await createAddressUseCase.execute(addressData);
     const addresses = await addressesRepositoryInMemory.getAddresses({
       user_id: user.id,
     });

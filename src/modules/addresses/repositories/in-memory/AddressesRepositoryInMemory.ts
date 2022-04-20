@@ -33,10 +33,6 @@ class AddressesRepositoryInMemory implements IAddressesRepository {
     return this.addresses.find((address) => address.id === id);
   }
 
-  async getAddressByUserId(id: string): Promise<Address> {
-    return this.addresses.find((address) => address.id === id);
-  }
-
   async delete(id: string): Promise<void> {
     let addressIndex: number;
     this.addresses.map((address, index) => {

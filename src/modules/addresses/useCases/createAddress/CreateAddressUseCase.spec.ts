@@ -9,13 +9,15 @@ import { CreateAddressUseCase } from "./CreateAddressUseCase";
 let usersRepositoryInMemory: UsersRepositoryInMemory;
 let createUserUseCase: CreateUserUseCase;
 let addressesRepositoryInMemory: AddressesRepositoryInMemory;
-let createAddresUseCase: CreateAddressUseCase;
+let createAddressUseCase: CreateAddressUseCase;
 describe("Create addresses", () => {
   beforeEach(() => {
     usersRepositoryInMemory = new UsersRepositoryInMemory();
     createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
     addressesRepositoryInMemory = new AddressesRepositoryInMemory();
-    createAddresUseCase = new CreateAddressUseCase(addressesRepositoryInMemory);
+    createAddressUseCase = new CreateAddressUseCase(
+      addressesRepositoryInMemory
+    );
   });
 
   it("should create a new address", async () => {
@@ -38,7 +40,7 @@ describe("Create addresses", () => {
       zipcode: "123456",
     };
 
-    await createAddresUseCase.execute(addressData);
+    await createAddressUseCase.execute(addressData);
     const address = addressesRepositoryInMemory.addresses.length;
 
     expect(address).toBeGreaterThanOrEqual(1);
