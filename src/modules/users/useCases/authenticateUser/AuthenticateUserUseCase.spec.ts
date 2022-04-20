@@ -1,33 +1,36 @@
-import { container } from "tsyringe";
-
-import { IAuthenticateUsersDTO } from "@modules/users/dtos/IAuthenticateUsersDTO";
+import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
+import { UsersRepositoryInMemory } from "@modules/users/repositories/in-memory/UsersRepositoryInMemory";
 import { AppError } from "@shared/errors/AppError";
-import { dataSource } from "@shared/typeorm/database";
 
+import { CreateUserUseCase } from "../createUser/CreateUserUseCase";
 import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 
 let authenticateUserUseCase: AuthenticateUserUseCase;
-const testDataSource = dataSource;
+let usersRepositoryInMemory: UsersRepositoryInMemory;
+let createUserUseCase: CreateUserUseCase;
 
 describe("Authenticate user", () => {
-  beforeAll(async () => {
-    await testDataSource.initialize();
-    authenticateUserUseCase = container.resolve(AuthenticateUserUseCase);
-  });
-
-  afterAll(async () => {
-    await testDataSource.destroy();
+  beforeEach(() => {
+    usersRepositoryInMemory = new UsersRepositoryInMemory();
+    authenticateUserUseCase = new AuthenticateUserUseCase(
+      usersRepositoryInMemory
+    );
+    createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
   });
 
   it("should be able to authenticate an user", async () => {
-    const data: IAuthenticateUsersDTO = {
-      email: "macedbruno31@gmail.com",
-      password: "123456",
+    const user: ICreateUsersDTO = {
+      cpf: "11111111111",
+      email: "user@example.com",
+      password: "password",
+      name: "user example",
+      birth_date: new Date("1994/27/02"),
     };
 
+    await createUserUseCase.execute(user);
     const result = await authenticateUserUseCase.execute({
-      email: data.email,
-      password: data.password,
+      email: user.email,
+      password: user.password,
     });
 
     expect(result).toHaveProperty("token");
@@ -44,14 +47,18 @@ describe("Authenticate user", () => {
 
   it("should not authenticate when user enters incorrect password", () => {
     expect(async () => {
-      const data: IAuthenticateUsersDTO = {
-        email: "macedbruno31@gmail.com",
-        password: "123456",
+      const user: ICreateUsersDTO = {
+        cpf: "11111111111",
+        email: "user@example.com",
+        password: "password",
+        name: "user example",
+        birth_date: new Date("1994/27/02"),
       };
 
+      await createUserUseCase.execute(user);
       await authenticateUserUseCase.execute({
-        email: data.email,
-        password: `1231313${data.password}`,
+        email: user.email,
+        password: "password1",
       });
     }).rejects.toBeInstanceOf(AppError);
   });
