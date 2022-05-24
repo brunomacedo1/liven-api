@@ -21,7 +21,7 @@ country - varchar (Abreviação dos países ex: BR, EUA)
 user_id
 
 - Permitir que um usuário crie um novo endereço.
-- Permitir que o usuário consiga visualizar seus endereços criados
+- Permitir que o usuário consiga visualizar seus endereços criados, passar query params de forma generica.
     
     
   👉 **Querystring e params**: Você também deve permitir o uso de querystring (ex: `GET [localhost:3000/user/address?country=BR](http://localhost:3000/user?idade=18)` para pegar todos os endereços cujo campo `country=BR`, e query params (ex: `GET localhost:3000/user/address/123`, para pegar o endereço de ID=123)

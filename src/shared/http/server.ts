@@ -13,7 +13,7 @@ import swaggerFile from "../../../swagger.json";
 import { router } from "./routes";
 
 const app = express();
-const port = process.env.PORT || 3333;
+const port = process.env.PORT || 3001;
 
 // Configuração de CORS com a lib 'cors'
 app.use(cors());

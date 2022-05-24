@@ -1,22 +1,17 @@
 import { ICreateAddressDTO } from "@modules/addresses/dtos/ICreateAddressDTO";
-import { Address } from "@modules/addresses/infra/typeorm/entities/Address";
 import { AddressesRepositoryInMemory } from "@modules/addresses/repositories/in-memory/AddressesRepositoryInMemory";
-import { ICreateUsersDTO } from "@modules/users/dtos/ICreateUsersDTO";
 import { UsersRepositoryInMemory } from "@modules/users/repositories/in-memory/UsersRepositoryInMemory";
 import { CreateUserUseCase } from "@modules/users/useCases/createUser/CreateUserUseCase";
 
 import { CreateAddressUseCase } from "../createAddress/CreateAddressUseCase";
 import { GetAddressesUseCase } from "./GetAddressesUseCase";
 
-let usersRepositoryInMemory: UsersRepositoryInMemory;
-let createUserUseCase: CreateUserUseCase;
 let addressesRepositoryInMemory: AddressesRepositoryInMemory;
 let createAddressUseCase: CreateAddressUseCase;
 let getAddressesUseCase: GetAddressesUseCase;
+
 describe("Get user addresses", () => {
   beforeEach(() => {
-    usersRepositoryInMemory = new UsersRepositoryInMemory();
-    createUserUseCase = new CreateUserUseCase(usersRepositoryInMemory);
     addressesRepositoryInMemory = new AddressesRepositoryInMemory();
     createAddressUseCase = new CreateAddressUseCase(
       addressesRepositoryInMemory
@@ -25,32 +20,28 @@ describe("Get user addresses", () => {
   });
 
   it("should return an specific address", async () => {
-    const userData: ICreateUsersDTO = {
-      cpf: "11111111111",
-      email: "user@example.com",
-      password: "password",
-      name: "user example",
-      birth_date: new Date("1994/27/02"),
-    };
-
-    await createUserUseCase.execute(userData);
-    const user = await usersRepositoryInMemory.findUserByEmail(userData.email);
-
     const addressData: ICreateAddressDTO = {
       address: "address example",
       country: "BR",
       state: "Alagoas",
-      user_id: user.id,
+      user_id: "d8fa66cc-14f7-41a0-8c5d-6b2f7292da9c",
       zipcode: "123456",
     };
 
     await createAddressUseCase.execute(addressData);
-    const addresses = await getAddressesUseCase.execute({ user_id: user.id });
+
+    const addresses = await getAddressesUseCase.execute({
+      user_id: "d8fa66cc-14f7-41a0-8c5d-6b2f7292da9c",
+    });
 
     expect(addresses).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          user_id: user.id,
+          user_id: "d8fa66cc-14f7-41a0-8c5d-6b2f7292da9c",
+          address: "address example",
+          country: "BR",
+          state: "Alagoas",
+          zipcode: "123456",
         }),
       ])
     );

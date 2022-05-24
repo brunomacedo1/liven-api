@@ -11,11 +11,14 @@ class GetAddressesUseCase {
     private addressesRepository: IAddressesRepository
   ) {}
 
-  async execute({ user_id, country }: IGetAddressesDTO): Promise<Address[]> {
+  async execute({
+    user_id,
+    queryStrings,
+  }: IGetAddressesDTO): Promise<Address[]> {
     const addresses = await this.addressesRepository.getAddresses({
       user_id,
       // Se não for passado o valor de country ele retorna undefined para que a query seja executada apenas com o user_id
-      country: country ? country.toLocaleUpperCase() : undefined,
+      queryStrings: queryStrings || null,
     });
 
     return addresses;

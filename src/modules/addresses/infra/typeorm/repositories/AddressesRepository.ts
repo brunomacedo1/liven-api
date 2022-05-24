@@ -36,15 +36,27 @@ class AddressesRepository implements IAddressesRepository {
 
   async getAddresses({
     user_id,
-    country,
+    queryStrings,
   }: IGetAddressesDTO): Promise<Address[]> {
-    const addresses = await this.repository.find({
-      where: {
-        user_id,
-        country,
-      },
+    const addressesQuery = this.repository
+      .createQueryBuilder("a")
+      .where("user_id = :user_id", { user_id });
+
+    Object.entries(queryStrings).forEach((queryString) => {
+      const [fieldName, value] = queryString;
+      console.log(fieldName, value);
+      if (value) {
+        addressesQuery.andWhere(
+          `LOWER(a.${fieldName}) = LOWER(:${fieldName})`,
+          {
+            [fieldName]: value,
+          }
+        );
+      }
     });
 
+    const addresses = await addressesQuery.getMany();
+    console.log(addresses);
     return addresses;
   }
 

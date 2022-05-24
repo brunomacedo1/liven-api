@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 import { ICreateAddressDTO } from "@modules/addresses/dtos/ICreateAddressDTO";
 import { IGetAddressesDTO } from "@modules/addresses/dtos/IGetAddressesDTO";
 import { IUpdateAddressDTO } from "@modules/addresses/dtos/IUpdateAddressDTO";
@@ -16,17 +17,23 @@ class AddressesRepositoryInMemory implements IAddressesRepository {
 
   async getAddresses({
     user_id,
-    country,
+    queryStrings,
   }: IGetAddressesDTO): Promise<Address[]> {
-    if (country) {
-      return [
-        this.addresses.find(
-          (address) =>
-            address.country === country && address.user_id === user_id
-        ),
-      ];
-    }
-    return [this.addresses.find((address) => address.user_id === user_id)];
+    return this.addresses.filter((address) => {
+      if (
+        address.user_id === user_id ||
+        (queryStrings["state"] && address.state === queryStrings["state"]) ||
+        (queryStrings["zipcode"] &&
+          address.zipcode === queryStrings["zipcode"]) ||
+        (queryStrings["address"] &&
+          address.address === queryStrings["address"]) ||
+        (queryStrings["country"] &&
+          address.country === queryStrings["countrys"])
+      ) {
+        return address;
+      }
+      return null;
+    });
   }
 
   async getAddressById(id: string): Promise<Address> {
